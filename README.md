@@ -1,39 +1,41 @@
-# Campaign Timing & Contact Frequency Audit
+# The Frequency Ceiling
 
-Self-directed analytics project by **Eden Hwang**. Not affiliated with any employer — built using a public academic dataset to practice marketing analytics skills.
+A marketing analytics case study: does a paid ad campaign actually beat doing nothing, how much ad exposure is enough before returns flatten, and when should delivery be scheduled?
 
-**Live interactive dashboard (Tableau Public):** https://public.tableau.com/app/profile/eden.hwang/viz/CampaignTimingContactFrequencyAudit/CampaignTimingContactFrequencyAudit
+**[Read the full write-up →](https://claude.ai/code/artifact/d50af0fb-918c-493b-9904-6b412f6c5d73)**
 
-## The finding
+## About
 
-Auditing 4,521 real direct-marketing phone contacts, I found that **31% of all outreach happened in the single worst-converting month (May, 6.7% conversion)**, while the best-converting month (October, 46.2% conversion) received under 2% of call volume. That's a budget-allocation mismatch a standard planning brief wouldn't catch.
+This is a self-directed practice project, not client or employer work. I built it to practice the kind of question a paid-media or lifecycle marketing team asks about a campaign — is it working, how much exposure is enough, when should it run — using Python instead of a BI tool.
 
-Two supporting patterns:
-- Conversion rate declines steadily as contact frequency increases (13.8% at 1 contact → 7.2% at 6+), suggesting audience fatigue rather than persistence paying off.
-- Leads with a prior successful campaign outcome convert at 64.3%, over 5x the baseline — a clear signal this segment is under-prioritized for re-contact.
+## Dataset
 
-## Recommendation
+[Marketing A/B Testing](https://www.kaggle.com/datasets/faviovaz/marketing-ab-testing) (Faviovaz, via Kaggle) — 588,101 users, logging test group (ad/psa), whether they converted, total ad impressions received, and the day/hour each user got the most of them.
 
-1. Reallocate call volume from low-converting months toward historically strong windows (Sept/Oct/Dec), even using the same lead list.
-2. Cap outreach at 2-3 contacts per lead — returns diminish sharply beyond that point.
-3. Prioritize call capacity toward leads with a prior successful outcome.
+The CSV isn't included in this repo (see Kaggle's terms). Download it from the link above and save it as `data/marketing_AB.csv` before running the script.
 
-## Data source
+## Key findings
 
-UCI Machine Learning Repository, *Bank Marketing Dataset*
-S. Moro, P. Cortez, P. Rita, "A Data-Driven Approach to Predict the Success of Bank Telemarketing," *Decision Support Systems*, Elsevier, 62:22-31, June 2014.
+- Ad-exposed users converted at 2.55% vs. 1.79% for the PSA control — a 43% relative lift (two-proportion z-test, p < 0.001, 95% CI on the lift: 0.60–0.94 points)
+- Conversion climbs sharply with exposure up to roughly 150–200 ad views per user, then flattens — only 3.9% of the ad group saw more than 100 ads, but they convert at 17.1%
+- Conversion rate by day/hour of peak delivery ranges from 1.5% to 4.6%; weekday early-to-mid afternoon and Sunday evening are strongest, weekend late morning is weakest
 
-Public dataset used for skill-building only — not real campaign data from any employer. All analysis, findings, and the dashboard design are original.
+## Running it
 
-## Files
-
-- `analysis.py` — Python script (pandas) that reproduces every finding above
-- `bank_marketing_data.csv` — the dataset
-- Dashboard built in Tableau Public (linked above)
-
-## Run it yourself
-
-```
-pip install pandas
+```bash
+pip install -r requirements.txt
 python analysis.py
 ```
+
+Prints every statistic used in the write-up: group sizes, the lift with its confidence interval and p-value, conversion rate by exposure bucket, and the top/bottom day-hour windows.
+
+## Tools
+
+Python, pandas, SciPy — matches my actual toolkit (Google Analytics, Python, and R from coursework). No Tableau or Power BI used or claimed here.
+
+## Limitations
+
+The ad/psa split is the one randomized comparison, so it supports a causal read. Total ad exposure and delivery timing were not randomly assigned, so the frequency and timing findings are observational — they could partly reflect who those users already were rather than a pure effect of the ads. A randomized frequency-cap test and a scheduling test would be the next step to isolate that. Full discussion in the write-up.
+
+---
+Eden Hwang · aoifeeden3@gmail.com · [LinkedIn](https://linkedin.com/in/edenjhwang)
